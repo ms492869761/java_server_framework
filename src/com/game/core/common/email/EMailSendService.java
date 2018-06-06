@@ -1,8 +1,10 @@
 package com.game.core.common.email;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -13,6 +15,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+
+import com.game.core.common.logger.LoggerExecuteHandler;
 
 /**
  * 发送EMAIL
@@ -33,7 +37,11 @@ public class EMailSendService {
 		config.setProxySet(false);
 		config.setSender("wangzhiyuan@playcrab.com");
 		
-		mailServiceConfigMap.put("default", config);
+		try {
+			addMailServiceTemp("default", config);
+		} catch (MessagingException e) {
+			LoggerExecuteHandler.getInstance().dealExceptionLogger("init mail service exception", e);
+		}
 	}
 	
 	public static EMailSendService getInstance() {
@@ -46,7 +54,9 @@ public class EMailSendService {
 	
 	private Map<String, Transport> mailServiceTransportMap=new HashMap<>();
 	
-	private void addMailServiceTemp(String method,MailServiceConfig config) throws MessagingException {
+	private Set<String> adminAddress=new HashSet<>();
+	
+	public void addMailServiceTemp(String method,MailServiceConfig config) throws MessagingException {
 		mailServiceConfigMap.put(method, config);
 		Properties properties = getMailServiceProp(method);
 		SimpleAuthenticator simpleAuthenticator = new SimpleAuthenticator(config.getMailAccount(), config.getPassword());
@@ -56,12 +66,22 @@ public class EMailSendService {
 		Transport transport = session.getTransport("smtp");
 		transport.connect();
 		mailServiceTransportMap.put(method, transport);
-		
-		
-		
 	}
 	
-	public boolean sendMail(String method,String address,String content,String title) throws AddressException, MessagingException {
+	public void addAdminAddress(String address) {
+		this.adminAddress.add(address);
+	}
+	
+	public boolean sendAdminMail(String method,String title,String content) throws AddressException, MessagingException {
+		for (String address : adminAddress) {
+			if(!sendMail(method, address, title, content)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean sendMail(String method,String address,String title,String content) throws AddressException, MessagingException {
 		Session session = mailServiceSessionMap.get(method);
 		MailServiceConfig mailServiceConfig = mailServiceConfigMap.get(method);
 		Transport transport = mailServiceTransportMap.get(method);
@@ -78,7 +98,7 @@ public class EMailSendService {
 		if(!transport.isConnected()) {
 			transport.connect();	
 		}
-		
+		LoggerExecuteHandler.getInstance().dealDebugLogger("send email to \"{}\" , title: \"{}\" , content: \"{}\"", address,title,content);
 		transport.sendMessage(message, message.getAllRecipients());
         return true;
 	}
@@ -102,7 +122,7 @@ public class EMailSendService {
 	
 	
 	public static void main(String[] args) throws AddressException, MessagingException {
-		EMailSendService.getInstance().sendMail("default", "w492869761@vip.qq.com", "this a java send email", "test email");
+		EMailSendService.getInstance().sendMail("default", "w492869761@vip.qq.com", "test email","this a java send email");
 	}
 	
 }
