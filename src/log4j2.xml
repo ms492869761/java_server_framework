@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss} %-5level [%thread][%file:%line] : %msg%n"/>
+    </Console>
+	<RollingFile name="RollingRileSystem" fileName="./logs/system.log" filePattern="./logs/%d{yyyyMMdd}/system-%d{yyyyMMdd}.log">
+		<PatternLayout pattern="%d{HH:mm:ss} %-5level [%thread][%file:%line] : %msg%n"/>
+		<Policies>
+			<TimeBasedTriggeringPolicy />
+		</Policies>
+	</RollingFile>
+		<RollingFile name="RollingRileDebug" fileName="./logs/debug.log" filePattern="./logs/%d{yyyyMMdd}/debug-%d{yyyyMMdd}.log">
+		<PatternLayout pattern="%d{HH:mm:ss} %-5level [%thread][%file:%line] : %msg%n"/>
+		<Policies>
+			<TimeBasedTriggeringPolicy />
+		</Policies>
+	</RollingFile>
+		<RollingFile name="RollingRileError" fileName="./logs/error.log" filePattern="./logs/%d{yyyyMMdd}/error-%d{yyyyMMdd}.log">
+		<PatternLayout pattern="%d{HH:mm:ss} %-5level [%thread][%file:%line] : %msg%n"/>
+		<Policies>
+			<TimeBasedTriggeringPolicy />
+		</Policies>
+	</RollingFile>
+  </Appenders>
+  <Loggers>
+    <Root level="error">
+      <AppenderRef ref="Console"/>
+    </Root>
+    <logger name="system" level="info">
+    	<AppenderRef ref="RollingRileSystem"/>
+    </logger>
+    <logger name="debug" level="debug">
+    	<AppenderRef ref="RollingRileDebug"/>
+    </logger>
+    <logger name="error" level="error">
+    	<AppenderRef ref="RollingRileError"/>
+    </logger>
+  </Loggers>
+</Configuration>
