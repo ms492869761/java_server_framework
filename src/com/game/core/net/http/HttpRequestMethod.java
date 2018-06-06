@@ -18,4 +18,8 @@ public enum HttpRequestMethod {
     HttpRequestMethod(String method) {
         this.realMethod = method;
     }
+    
+    public String getRealMethod() {
+		return realMethod;
+	}
 }
