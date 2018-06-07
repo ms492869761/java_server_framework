@@ -16,6 +16,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.alibaba.fastjson.JSON;
 import com.game.core.common.logger.LoggerExecuteHandler;
 
 /**
@@ -36,7 +37,6 @@ public class EMailSendService {
 		config.setMailServerPort("587");
 		config.setProxySet(false);
 		config.setSender("wangzhiyuan@playcrab.com");
-		
 		try {
 			addMailServiceTemp("default", config);
 		} catch (MessagingException e) {
