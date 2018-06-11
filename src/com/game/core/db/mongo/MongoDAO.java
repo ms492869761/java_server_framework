@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.game.core.common.utils.UUIDService;
 import com.game.core.db.mongo.ann.MongoCollectionAnn;
 import com.game.core.db.mongo.bean.BaseMongoPersistenceBean;
+import com.game.core.db.mongo.bean.MongoAddressBean;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -21,7 +22,6 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.changestream.UpdateDescription;
 import com.mongodb.client.result.UpdateResult;
 
 public class MongoDAO {
@@ -169,8 +169,19 @@ public class MongoDAO {
 		return null;
 	}
 	
+	/**
+	 * 关闭链接
+	 */
+	public void shutdown() {
+		client.close();
+	}
 	
 	
+	/**
+	 * 测试用例
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 			MongoDbConfig config=new MongoDbConfig();
 			config.setDataBase("admin");
@@ -185,8 +196,8 @@ public class MongoDAO {
 			mongoAddressBean3.setHost("172.16.170.143");
 			mongoAddressBean3.setPort(33000);
 			config.getAddressList().add(mongoAddressBean);
-//			config.getAddressList().add(mongoAddressBean2);
-//			config.getAddressList().add(mongoAddressBean3);
+			config.getAddressList().add(mongoAddressBean2);
+			config.getAddressList().add(mongoAddressBean3);
 			config.setConnectPreHost(5);
 			config.setId("test");
 			config.setPassword("mongodb_password");
@@ -196,15 +207,10 @@ public class MongoDAO {
 			config.setReplicaSet("replset_1");
 			TestJson tj=new TestJson();
 			tj.setMongoId(UUIDService.getInstance().getId(1)+"");
-//			tj.setMongoId("100183695360001");
 			tj.setName("yuanzhiwang");
 			MongoDAO mongoDAO = new MongoDAO(config);
 			mongoDAO.update(tj);
-			
-			
-			
 			TestJson queryById = mongoDAO.queryById("100183695360001", TestJson.class);
-			
 			System.out.println(JSON.toJSON(queryById));
 			
 	}
@@ -213,7 +219,11 @@ public class MongoDAO {
 	
 }
 
-
+/**
+ * 测试mongoDb持久化对象
+ * @author wangzhiyuan
+ *
+ */
 @MongoCollectionAnn(Collection="testJavaMongodb")
 class TestJson extends BaseMongoPersistenceBean{
 	private String name;
@@ -225,8 +235,5 @@ class TestJson extends BaseMongoPersistenceBean{
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
-	
 }
 

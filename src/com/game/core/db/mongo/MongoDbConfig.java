@@ -3,6 +3,8 @@ package com.game.core.db.mongo;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.game.core.db.mongo.bean.MongoAddressBean;
+
 public class MongoDbConfig {
 	
 	private String id;

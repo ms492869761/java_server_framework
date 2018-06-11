@@ -1,4 +1,4 @@
-package com.game.core.db.mongo;
+package com.game.core.db.mongo.bean;
 
 /**
  * mongoDB连接地址
