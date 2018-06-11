@@ -11,7 +11,7 @@ public class MongoDbConfig {
 	
 	private List<MongoAddressBean> addressList=new ArrayList<>();
 	
-	private String dataBase;
+	private String authDataBase;
 	
 	private String userDataBase;
 	
@@ -44,12 +44,12 @@ public class MongoDbConfig {
 		this.addressList = addressList;
 	}
 
-	public String getDataBase() {
-		return dataBase;
+	public String getAuthDataBase() {
+		return authDataBase;
 	}
 
-	public void setDataBase(String dataBase) {
-		this.dataBase = dataBase;
+	public void setAuthDataBase(String authDataBase) {
+		this.authDataBase = authDataBase;
 	}
 	
 	public String getUserDataBase() {

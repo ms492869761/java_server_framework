@@ -22,6 +22,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 
 public class MongoDAO {
@@ -41,7 +42,7 @@ public class MongoDAO {
 		builder.socketTimeout(config.getSocketTimeout());
 		builder.threadsAllowedToBlockForConnectionMultiplier(config.getThreadsAllowedToBlockForConnectionMultiplier());
 		// 构建mongodb 登录权限
-		MongoCredential createCredential = MongoCredential.createCredential(config.getUser(), config.getDataBase(), config.getPassword().toCharArray());
+		MongoCredential createCredential = MongoCredential.createCredential(config.getUser(), config.getAuthDataBase()	, config.getPassword().toCharArray());
 		
 		List<MongoAddressBean> addressList = config.getAddressList();
 		if(addressList.size()>1) {
@@ -170,6 +171,45 @@ public class MongoDAO {
 	}
 	
 	/**
+	 * 删除对象
+	 * @param id
+	 * @param cls
+	 * @return
+	 * @throws Exception
+	 */
+	public <T extends BaseMongoPersistenceBean> boolean delete(String id,Class<T> cls) throws Exception{
+		MongoCollectionAnn annotation = cls.getAnnotation(MongoCollectionAnn.class);
+		if(annotation==null) {
+			throw new Exception("error mongo persistence Annotation is null");
+		}
+		MongoDatabase database = client.getDatabase(config.getUserDataBase());
+		MongoCollection<Document> mongoCollection = database.getCollection(annotation.Collection());
+		BasicDBObject query=new BasicDBObject("_id", id);
+		DeleteResult deleteOne = mongoCollection.deleteOne(query);
+		long deletedCount = deleteOne.getDeletedCount();
+		if(deletedCount>=1) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 删除对象
+	 * @param doc
+	 * @return
+	 * @throws Exception
+	 */
+	public <T extends BaseMongoPersistenceBean> boolean delete(T doc) throws Exception{
+		if(doc==null) {
+			throw new Exception("error mongo persistence bean is null");
+		}
+		String mongoId = doc.getMongoId();
+		return delete(mongoId, doc.getClass());
+	}
+	
+	
+	
+	/**
 	 * 关闭链接
 	 */
 	public void shutdown() {
@@ -184,7 +224,7 @@ public class MongoDAO {
 	 */
 	public static void main(String[] args) throws Exception {
 			MongoDbConfig config=new MongoDbConfig();
-			config.setDataBase("admin");
+			config.setAuthDataBase("admin");
 			config.setUserDataBase("test");
 			MongoAddressBean mongoAddressBean = new MongoAddressBean();
 			mongoAddressBean.setHost("172.16.170.143");
