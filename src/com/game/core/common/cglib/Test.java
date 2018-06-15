@@ -35,18 +35,21 @@ public class Test extends CGLibBean {
 	}
 
 
-
+	/**
+	 * 千万次执行时间 11283
+	 * @param args
+	 */
 	public static void main(String[] args) {
-		String jsonString = "{\"add\":\"ccccc\",\"id\":\"aaaaa\",\"name\":\"bbbbbb\"}";
-		System.out.println(jsonString);
-		Test createCGLibBean = CGLibBeanManager.createCGLibBean(Test.class, jsonString);
-		Map<String, Object> diffData = createCGLibBean.getDiffData();
-		System.out.println(diffData);
-		System.out.println(JSON.toJSONString(createCGLibBean));
-		createCGLibBean.setName("wzy");
-		Map<String, Object> diffData2 = createCGLibBean.getDiffData();
-		System.out.println(diffData2);
-		System.out.println(JSON.toJSONString(createCGLibBean));
+			String jsonString = "{\"add\":\"ccccc\",\"id\":\"aaaaa\",\"name\":\"bbbbbb\"}";
+			System.out.println(jsonString);
+			Test createCGLibBean = CGLibBeanManager.createCGLibBean(Test.class, jsonString);
+			Map<String, Object> diffData = createCGLibBean.getDiffData();
+			System.out.println(diffData);
+			System.out.println(JSON.toJSONString(createCGLibBean));
+			createCGLibBean.setName("wzy");
+			Map<String, Object> diffData2 = createCGLibBean.getDiffData();
+			System.out.println(JSON.toJSONString(diffData2));
+			System.out.println(JSON.toJSONString(createCGLibBean));
 	}
 
 }

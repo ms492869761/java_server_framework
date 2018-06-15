@@ -1,13 +1,16 @@
 package com.game.core.db.mongo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
 import com.alibaba.fastjson.JSON;
-import com.game.core.common.utils.UUIDService;
+import com.game.core.common.cglib.CGLibBeanManager;
 import com.game.core.db.mongo.ann.MongoCollectionAnn;
 import com.game.core.db.mongo.bean.BaseMongoPersistenceBean;
 import com.game.core.db.mongo.bean.MongoAddressBean;
@@ -101,7 +104,8 @@ public class MongoDAO {
 	 * @throws Exception
 	 */
 	public <T extends BaseMongoPersistenceBean> void update(T doc) throws Exception {
-		MongoCollectionAnn annotation = doc.getClass().getAnnotation(MongoCollectionAnn.class);
+		Class<? extends BaseMongoPersistenceBean> class1 = doc.getClass();
+		MongoCollectionAnn annotation = class1.getAnnotation(MongoCollectionAnn.class);
 		if(annotation==null) {
 			throw new Exception("error mongo persistence Annotation is null");
 		}
@@ -128,14 +132,20 @@ public class MongoDAO {
 		MongoDatabase database = client.getDatabase(config.getUserDataBase());
 		MongoCollection<Document> mongoCollection = database.getCollection(collection);
 		BasicDBObject query=new BasicDBObject("_id", doc.getMongoId());
-		String jsonObject = JSON.toJSONString(doc);
-		Document document = Document.parse(jsonObject);
+		Document updateInfo = new Document();
+		Map<String, Object> diffData = doc.getDiffData();
+		Iterator<Entry<String, Object>> iterator = diffData.entrySet().iterator();
+		while(iterator.hasNext()) {
+			Entry<String, Object> next = iterator.next();
+			updateInfo.put(next.getKey(), next.getValue());
+		}
 		long count = mongoCollection.count(query);
-		
 		if(count<=0) {
 			throw new Exception("error the primary key not exists");
 		}
-		UpdateResult updateOne = mongoCollection.replaceOne(query, document);
+		Document update=new Document();
+		update.append("$set", updateInfo);
+		UpdateResult updateOne = mongoCollection.updateOne(query, update);
 		long modifiedCount = updateOne.getModifiedCount();
 		return modifiedCount>=1;
 	}
@@ -164,7 +174,7 @@ public class MongoDAO {
 		while(iterator.hasNext()) {
 			Document next = iterator.next();
 			String json = next.toJson();
-			T javaObject = JSON.toJavaObject(JSON.parseObject(json), cls);
+			T javaObject = CGLibBeanManager.createCGLibBean(cls, json);
 			return javaObject;
 		}
 		return null;
@@ -236,8 +246,8 @@ public class MongoDAO {
 			mongoAddressBean3.setHost("172.16.170.143");
 			mongoAddressBean3.setPort(33000);
 			config.getAddressList().add(mongoAddressBean);
-			config.getAddressList().add(mongoAddressBean2);
-			config.getAddressList().add(mongoAddressBean3);
+//			config.getAddressList().add(mongoAddressBean2);
+//			config.getAddressList().add(mongoAddressBean3);
 			config.setConnectPreHost(5);
 			config.setId("test");
 			config.setPassword("mongodb_password");
@@ -245,13 +255,11 @@ public class MongoDAO {
 			config.setSocketTimeout(30);
 			config.setThreadsAllowedToBlockForConnectionMultiplier(5);
 			config.setReplicaSet("replset_1");
-			TestJson tj=new TestJson();
-			tj.setMongoId(UUIDService.getInstance().getId(1)+"");
-			tj.setName("yuanzhiwang");
 			MongoDAO mongoDAO = new MongoDAO(config);
-			mongoDAO.update(tj);
 			TestJson queryById = mongoDAO.queryById("100183695360001", TestJson.class);
 			System.out.println(JSON.toJSON(queryById));
+			queryById.setName("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+			mongoDAO.update(queryById);
 			
 	}
 	
