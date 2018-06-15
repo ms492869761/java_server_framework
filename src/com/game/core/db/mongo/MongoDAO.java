@@ -11,6 +11,10 @@ import org.bson.Document;
 
 import com.alibaba.fastjson.JSON;
 import com.game.core.common.cglib.CGLibBeanManager;
+<<<<<<< HEAD
+=======
+import com.game.core.common.utils.UUIDService;
+>>>>>>> 989c28cb0ad7e03a20e9fc8a1e436625970d6070
 import com.game.core.db.mongo.ann.MongoCollectionAnn;
 import com.game.core.db.mongo.bean.BaseMongoPersistenceBean;
 import com.game.core.db.mongo.bean.MongoAddressBean;
