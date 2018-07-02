@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSessionContext;
 import com.game.core.common.utils.UUIDService;
 
 /**
- * netty session
+ * netty session 会话
  * @author wangzhiyuan
  *
  */
