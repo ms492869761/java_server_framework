@@ -49,6 +49,16 @@ public class BaseRepository {
 		return this.mongoTemplate.find(query, clz).get(0);
 	}
 	
+	public <T> T getDocById(String id,Class<T> clz,String collectionName,Set<String> fields) {
+		Criteria cri=new Criteria("_id").is(id);
+		Query query = Query.query(cri);
+		fields.forEach(field->{
+			query.fields().include(field);
+		});
+		return this.mongoTemplate.find(query, clz, collectionName).get(0);
+	}
+	
+	
 	public <T> void remove(String id,Class<T> clz) {
 		Criteria criteria = new Criteria("id").is(id);
 		Query query = new Query(criteria);

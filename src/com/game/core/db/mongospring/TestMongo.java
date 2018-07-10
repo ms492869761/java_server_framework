@@ -2,17 +2,19 @@ package com.game.core.db.mongospring;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import com.alibaba.fastjson.JSON;
 
 public class TestMongo {
 	
 	public static void main(String[] args) {
-			
-		
 		MongoConfig mongoConfig=new MongoConfig();
 		mongoConfig.setAuthDBName("admin");
-		mongoConfig.setDbName("test");
+		mongoConfig.setDbName("xianpro_dev10");
 		mongoConfig.setConnPreHost(5);
 		mongoConfig.setUsername("siteRootAdmin");
 		mongoConfig.setPassword("mongodb_password");
@@ -29,35 +31,15 @@ public class TestMongo {
 		MongoFactory mongoFactory=new MongoFactory();
 		mongoFactory.init(mongoConfigMap);
 		BaseRepository daoByKey = mongoFactory.getDaoByKey("default");
+		System.out.println(JSON.toJSONString(mongoConfig));
+		HashMap<String, String> dataMap=new HashMap<>();
+		Set<String> fields=new HashSet<>();
+		fields.add("partners");
+		HashMap<String, String> docById = daoByKey.getDocById("dev10_226",  dataMap.getClass(), "users", fields);
 		
 		
-		
-		TestMongoDbBean bean=new TestMongoDbBean();
-		bean.setId("123456789");
-		bean.setName("wangzhiyuan");
-		bean.setAge(100);
-		bean.setAddress("beijing");
-		bean.getNicknames().add("123");
-		bean.getNicknames().add("456");
-		bean.getNicknames().add("789");
-		bean.getAttributes().put("a", "aaa");
-		bean.getAttributes().put("b", "bbbb");
-		bean.getAttributes().put("c", "cccc");
-		for(int i=0;i<100;i++) {
-			bean.getAttributes().put(i+"", i+"");
-		}
-		long startTime = System.currentTimeMillis();
-		for(int i=0;i<10000;i++) {
-			daoByKey.getDocById("123456789", TestMongoDbBean.class);
-		}
-		long endTime = System.currentTimeMillis();
-		System.out.println((endTime-startTime)+"ms");
-		
-		
+		System.out.println(docById);
 	}
-	
-	
-	
 }
 
 
