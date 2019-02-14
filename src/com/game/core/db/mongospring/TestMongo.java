@@ -35,10 +35,8 @@ public class TestMongo {
 		HashMap<String, String> dataMap=new HashMap<>();
 		Set<String> fields=new HashSet<>();
 		fields.add("partners");
-		HashMap<String, String> docById = daoByKey.getDocById("dev10_226",  dataMap.getClass(), "users", fields);
 		
 		
-		System.out.println(docById);
 	}
 }
 
